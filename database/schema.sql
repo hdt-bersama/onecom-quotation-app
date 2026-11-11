@@ -29,6 +29,9 @@ insert into public.settings (id, terms) values (
     E'Harga dapat berubah sewaktu-waktu tanpa pemberitahuan terlebih dahulu.\nPembayaran dilakukan melalui transfer ke rekening yang tertera.'
 ) on conflict (id) do nothing;
 
+-- Upgrade: database lama (skema versi PHP) memakai kolom logo_path. Versi web memakai logo_data.
+alter table public.settings add column if not exists logo_data text;
+
 -- 2. Pelanggan -----------------------------------------------------------
 create table if not exists public.customers (
     id          bigint generated always as identity primary key,
