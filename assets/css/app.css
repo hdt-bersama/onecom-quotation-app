@@ -207,6 +207,65 @@ select.status.info { background: var(--info-bg); color: var(--info); }
   .appnav nav a { white-space: nowrap; }
 }
 
+/* ---------- Mode HP: tanpa geser kiri/kanan, tombol simpan menempel di bawah ---------- */
+.actionbar .bar-total { display: none; }
+.items-tbl td .rm-txt { display: none; }
+@media (max-width: 900px) {
+  html, body { overflow-x: hidden; }
+  .container { padding-left: 12px; padding-right: 12px; }
+  .col, .card, .fields > * { min-width: 0; }
+  .fields > .w60, .fields > .w40, .fields > .w50 { flex: 1 1 100%; min-width: 0; }
+  /* untuk form & pengaturan: sisakan ruang agar konten tidak tertutup bar bawah */
+  #f { padding-bottom: 110px; }
+  .col.side .actionbar, .settings > .actionbar, .settings .actionbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; margin: 0;
+    background: var(--surface); border-top: 1px solid var(--line); box-shadow: 0 -6px 20px rgba(10, 20, 40, .12);
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .actionbar .bar-total { display: flex; grid-column: 1 / -1; justify-content: space-between; align-items: baseline; font-size: 1rem; }
+  .actionbar .bar-total b { font-size: 1.15rem; }
+  .actionbar .btn { min-height: 44px; padding: 8px 10px; font-size: .95rem; }
+  .actionbar .btn.link { display: none; }
+  .actionbar .btn.block { grid-column: 1 / -1; }
+  .totals-card, .col.side .totals { position: static; }
+  #toasts { bottom: calc(110px + env(safe-area-inset-bottom)); }
+}
+@media (max-width: 760px) {
+  /* baris item -> kartu bertumpuk */
+  .table-wrap:has(.items-tbl) { overflow: visible; }
+  .items-tbl { min-width: 0; display: block; }
+  .items-tbl thead { display: none; }
+  .items-tbl tbody { display: block; }
+  .items-tbl tr.item { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px; margin-bottom: 10px;
+    border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); }
+  .items-tbl tr.item:hover { background: var(--surface-2); }
+  .items-tbl td { display: block; padding: 0; border: 0; min-width: 0; }
+  .items-tbl td:nth-child(1) { grid-column: 1 / -1; }
+  .items-tbl td[data-label]::before { content: attr(data-label); display: block; font-size: .74rem; font-weight: 600; color: var(--muted); margin-bottom: 3px; }
+  .items-tbl td.line-total { padding: 0; align-self: end; font-size: 1.05rem; text-align: left; }
+  .items-tbl td.rm { text-align: right; align-self: end; }
+  .items-tbl td.rm .rm-txt { display: inline; }
+  .items-tbl td input, .items-tbl td textarea { min-height: 42px; font-size: 16px; }   /* 16px: cegah zoom otomatis iOS */
+  input, select, textarea { font-size: 16px; }
+  .seg button { padding: 9px 12px; }
+  .page-head { gap: 8px; }
+}
+
+
+/* Tampilan layar di HP untuk lembar cetak (cetak/PDF tetap A4 persis) */
+@media screen and (max-width: 900px) {
+  .sheet { width: auto; max-width: 100%; min-height: 0; padding: 14px 12px; overflow: hidden; }
+  .sheet .kop, .sheet .info, .sheet .summary, .sheet .two, .sheet .sign { flex-wrap: wrap; gap: 10px; }
+  .sheet table.totals { min-width: 0; width: 100%; }
+  .sheet table.items { width: 100%; }
+  .sheet table.items th, .sheet table.items td { padding: 4px 3px; font-size: 8pt; overflow-wrap: anywhere; }
+  .sheet table.items th { letter-spacing: 0; }
+  .sheet table.items td.r { white-space: nowrap; }
+  .sheet table.items th { white-space: normal; }
+  .toolbar .hint { display: none; }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stat { min-width: 0; padding: 12px; }
+  .stat .val { font-size: 1.1rem; overflow-wrap: anywhere; }
+}
+
 /* ---------- Cetak ---------- */
 @page { size: A4; margin: 14mm 15mm 16mm; }
 @media print {

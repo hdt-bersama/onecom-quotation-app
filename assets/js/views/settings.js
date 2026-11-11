@@ -72,7 +72,7 @@ export async function render(root) {
           <label class="w50">Masa berlaku / jatuh tempo (hari)<input type="number" min="0" name="default_valid_days" value="${num(s.default_valid_days)}"></label>
         </div>
       </div>
-      <button class="btn primary lg block" id="save">Simpan Pengaturan</button>
+      <div class="actionbar"><button class="btn primary lg block" id="save">Simpan Pengaturan</button></div>
     </div>
   </form>`;
 

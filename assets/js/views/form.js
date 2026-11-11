@@ -8,12 +8,12 @@ const rowHtml = (it = {}) => `
       <input data-f="description" placeholder="Nama barang / jasa" value="${esc(it.description)}">
       <textarea data-f="details" rows="2" placeholder="Spesifikasi (satu baris per spek, opsional)">${esc(it.details)}</textarea>
     </td>
-    <td><input data-f="qty" type="number" min="0" step="any" inputmode="decimal" value="${it.qty ?? 1}"></td>
-    <td><input data-f="unit" placeholder="unit" value="${esc(it.unit)}"></td>
-    <td><input data-f="unit_price" type="number" min="0" step="any" inputmode="decimal" value="${it.unit_price ?? 0}"></td>
-    <td><input data-f="discount_percent" type="number" min="0" max="100" step="any" inputmode="decimal" value="${it.discount_percent ?? 0}"></td>
-    <td class="r strong line-total">0</td>
-    <td><button type="button" class="btn sm outline bad" data-act="rm" title="Hapus baris">✕</button></td>
+    <td data-label="Qty"><input data-f="qty" type="number" min="0" step="any" inputmode="decimal" value="${it.qty ?? 1}"></td>
+    <td data-label="Satuan"><input data-f="unit" placeholder="unit" value="${esc(it.unit)}"></td>
+    <td data-label="Harga satuan"><input data-f="unit_price" type="number" min="0" step="any" inputmode="decimal" value="${it.unit_price ?? 0}"></td>
+    <td data-label="Diskon %"><input data-f="discount_percent" type="number" min="0" max="100" step="any" inputmode="decimal" value="${it.discount_percent ?? 0}"></td>
+    <td class="r strong line-total" data-label="Total">0</td>
+    <td class="rm"><button type="button" class="btn sm outline bad" data-act="rm" title="Hapus baris">✕ <span class="rm-txt">Hapus</span></button></td>
   </tr>`;
 
 export async function render(root, { type, id }) {
@@ -103,7 +103,8 @@ export async function render(root, { type, id }) {
           <div class="trow grand"><span>Total</span><span>Rp <span id="t-total">0</span></span></div>
         </div>
 
-        <div class="stack">
+        <div class="stack actionbar">
+          <div class="bar-total"><span>Total</span><b>Rp <span id="t-total-bar">0</span></b></div>
           <button class="btn primary lg" id="save" name="after" value="list"></button>
           <button class="btn outline" name="after" value="print">Simpan &amp; Cetak</button>
           <a class="btn link" href="#/dashboard">Batal</a>
@@ -144,6 +145,7 @@ export async function render(root, { type, id }) {
     $('#t-disc').textContent = '- ' + rupiah(r.discount);
     $('#t-tax').textContent = rupiah(r.tax);
     $('#t-total').textContent = rupiah(r.total);
+    $('#t-total-bar').textContent = rupiah(r.total);
   }
 
   applyType();
