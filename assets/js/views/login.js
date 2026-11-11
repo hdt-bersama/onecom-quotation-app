@@ -1,8 +1,9 @@
-import { signIn, getCfg, hasCfg, saveCfg } from '../supabase.js';
+import { signIn, getCfg, hasCfg, saveCfg, isLoggedIn } from '../supabase.js';
+import { canInstall, promptInstall, onInstallChange } from '../pwa.js';
 import { esc } from '../util.js';
 
-export function render(root, { onDone }) {
-  const showCfg = !hasCfg();
+export function render(root, { onDone, forceCfg = false }) {
+  const showCfg = forceCfg || !hasCfg();
   const cfg = getCfg();
   root.innerHTML = `
   <div class="login-wrap">
@@ -24,6 +25,7 @@ export function render(root, { onDone }) {
         <button class="btn primary block" id="loginBtn">Masuk</button>
         <p class="center"><a href="#" id="chgCfg" class="small">Ubah koneksi Supabase</a></p>
       </form>
+      <p class="center" id="installRow" hidden><button type="button" class="btn sm outline" id="installBtn">Pasang aplikasi di perangkat ini</button></p>
     </div>
   </div>`;
 
@@ -39,6 +41,7 @@ export function render(root, { onDone }) {
     if (!/^https:\/\/.+/.test(url)) return show('URL harus diawali https://');
     saveCfg(url, String(f.get('key')));
     show('');
+    if (isLoggedIn()) return onDone();     // ganti koneksi saat sudah login (project sama)
     cfgForm.hidden = true;
     loginForm.hidden = false;
   });
@@ -48,6 +51,12 @@ export function render(root, { onDone }) {
     loginForm.hidden = true;
     cfgForm.hidden = false;
   });
+
+  const installRow = root.querySelector('#installRow');
+  const syncInstall = () => { installRow.hidden = !canInstall(); };
+  syncInstall();
+  const off = onInstallChange(() => { if (installRow.isConnected) syncInstall(); else off(); });
+  root.querySelector('#installBtn').addEventListener('click', () => promptInstall());
 
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();

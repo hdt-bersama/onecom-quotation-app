@@ -27,7 +27,12 @@ export function getCfg() {
   return { url, key };
 }
 export const hasCfg = () => { const c = getCfg(); return Boolean(c.url && c.key); };
-export function saveCfg(url, key) { write(LS_CFG, { url: url.trim(), key: key.trim() }); }
+export function saveCfg(url, key) {
+  const before = getCfg().url;
+  write(LS_CFG, { url: url.trim(), key: key.trim() });
+  // Pindah ke project lain -> sesi login lama tidak berlaku lagi
+  if (before && before !== getCfg().url) { session = null; write(LS_SESSION, null); }
+}
 
 /* ---------- Sesi ---------- */
 let session = read(LS_SESSION);

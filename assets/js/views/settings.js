@@ -1,4 +1,6 @@
 import * as api from '../api.js';
+import { getCfg } from '../supabase.js';
+import { canInstall, promptInstall, onInstallChange, isStandalone, isIOS, isPersisted, requestPersist } from '../pwa.js';
 import { esc, num, toast } from '../util.js';
 
 /** Perkecil gambar logo (maks 480px) lalu kembalikan sebagai data URL. */
@@ -88,6 +90,49 @@ export async function render(root) {
     const f = e.target.files[0];
     if (!f) return;
     try { logo = await shrinkImage(f); drawLogo(); } catch (err) { toast(err.message, 'err'); e.target.value = ''; }
+  });
+
+  // ---- Kartu: Aplikasi & Koneksi
+  const cfg = getCfg();
+  root.insertAdjacentHTML('beforeend', `
+  <div class="card pad" id="appCard" style="margin-top:16px">
+    <h2 class="sec">Aplikasi &amp; Koneksi</h2>
+    <div class="fields">
+      <div class="w50"><div class="muted small">Project Supabase</div><div class="strong" style="word-break:break-all">${esc(cfg.url)}</div></div>
+      <div class="w50"><div class="muted small">Penyimpanan di perangkat ini</div><div id="persistState">...</div></div>
+    </div>
+    <p class="muted small">Koneksi dan login tersimpan di perangkat ini, jadi tidak perlu diisi ulang setiap membuka aplikasi.
+      Untuk perangkat lain, salin tautan setup lalu buka di sana.</p>
+    <div class="row">
+      <button type="button" class="btn primary" id="btnInstall" hidden>Pasang aplikasi</button>
+      <button type="button" class="btn outline" id="btnLink">Salin tautan setup perangkat lain</button>
+      <button type="button" class="btn outline bad" id="btnChange">Ubah koneksi...</button>
+    </div>
+    <p class="small muted" id="installHelp" style="margin-top:12px"></p>
+  </div>`);
+  const card = root.querySelector('#appCard');
+  const syncInstall = () => {
+    card.querySelector('#btnInstall').hidden = !canInstall();
+    card.querySelector('#installHelp').innerHTML = isStandalone()
+      ? 'Aplikasi sudah terpasang dan berjalan dalam mode aplikasi.'
+      : isIOS()
+        ? '<b>iPhone/iPad:</b> buka di Safari, ketuk Bagikan, lalu <b>Tambahkan ke Layar Utama</b>. Data koneksi di Safari tidak ikut terbawa, jadi buka tautan setup setelah memasang.'
+        : '<b>Android (Chrome):</b> menu &#8942; &rarr; <b>Instal aplikasi</b>. <b>Komputer (Chrome/Edge):</b> ikon instal di kanan address bar, atau menu &rarr; <b>Instal Penawaran &amp; Invoice</b>.';
+  };
+  syncInstall();
+  const off = onInstallChange(() => { if (card.isConnected) syncInstall(); else off(); });
+  card.querySelector('#btnInstall').addEventListener('click', () => promptInstall());
+  (async () => {
+    const ok = (await isPersisted()) || (await requestPersist());
+    card.querySelector('#persistState').textContent = ok ? 'Permanen (aman dari pembersihan otomatis)' : 'Standar (dapat dibersihkan browser saat penyimpanan penuh)';
+  })();
+  card.querySelector('#btnLink').addEventListener('click', async () => {
+    const link = `${location.origin}${location.pathname}#/setup?u=${encodeURIComponent(cfg.url)}&k=${encodeURIComponent(cfg.key)}`;
+    try { await navigator.clipboard.writeText(link); toast('Tautan setup disalin. Bagikan hanya ke perangkat Anda sendiri.'); }
+    catch { window.prompt('Salin tautan setup ini:', link); }
+  });
+  card.querySelector('#btnChange').addEventListener('click', () => {
+    if (confirm('Ubah koneksi Supabase? Anda mungkin perlu login ulang.')) location.hash = '#/setup';
   });
 
   form.addEventListener('submit', async (e) => {

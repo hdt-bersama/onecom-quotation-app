@@ -1,5 +1,6 @@
 // Router berbasis hash (#/dashboard, #/new/quotation, #/edit/invoice/3, #/print/quotation/3, #/settings)
-import { isLoggedIn, currentUser, signOut } from './supabase.js';
+import { isLoggedIn, currentUser, signOut, saveCfg } from './supabase.js';
+import { canInstall, promptInstall, onInstallChange, requestPersist } from './pwa.js';
 import { isType } from './api.js';
 import { esc, toast } from './util.js';
 
@@ -15,7 +16,9 @@ const loaders = {
   print: () => import('./views/print.js'),
 };
 
+let lastKey = 'dashboard';
 function drawNav(route) {
+  lastKey = route;
   if (!isLoggedIn()) { nav.hidden = true; return; }
   nav.hidden = false;
   const link = (href, label, key) => `<a href="${href}" class="${route === key ? 'on' : ''}">${label}</a>`;
@@ -29,17 +32,40 @@ function drawNav(route) {
         ${link('#/settings', 'Pengaturan', 'settings')}
       </nav>
       <div class="who"><span class="muted small">${esc(currentUser())}</span>
+        ${canInstall() ? '<button class="btn sm ghost" id="install">Pasang aplikasi</button>' : ''}
         <button class="btn sm ghost" id="logout">Keluar</button></div>
     </div>`;
   nav.querySelector('#logout').addEventListener('click', async () => { await signOut(); });
+  nav.querySelector('#install')?.addEventListener('click', () => promptInstall());
 }
+onInstallChange(() => { if (isLoggedIn()) drawNav(lastKey); });
 
 let token = 0;
 async function route() {
   const my = ++token;
-  const parts = (location.hash.replace(/^#\/?/, '') || 'dashboard').split('/');
-  const [name, a, b] = parts;
+  const raw = location.hash.replace(/^#\/?/, '');
+  const [pathPart, qs = ''] = raw.split('?');
+  const [name, a, b] = (pathPart || 'dashboard').split('/');
   document.title = APP_TITLE;
+
+  // Tautan setup: #/setup?u=<url>&k=<anon key>  -> simpan koneksi di perangkat ini
+  // #/setup (tanpa parameter)                     -> layar ubah koneksi
+  if (name === 'setup') {
+    const q = new URLSearchParams(qs);
+    const u = (q.get('u') || '').trim();
+    const k = (q.get('k') || '').trim();
+    if (u || k) {
+      if (/^https:\/\/[^\s/]+/.test(u) && k) { saveCfg(u, k); toast('Koneksi tersimpan di perangkat ini.'); }
+      else toast('Tautan setup tidak valid.', 'err');
+      location.replace(location.pathname + location.search + '#/dashboard');
+      return;
+    }
+    drawNav('setup');
+    const m = await loaders.login();
+    if (my !== token) return;
+    m.render(view, { forceCfg: true, onDone: () => { location.hash = '#/dashboard'; route(); } });
+    return;
+  }
 
   if (!isLoggedIn()) {
     drawNav('login');
@@ -61,6 +87,7 @@ async function route() {
     else { location.replace('#/dashboard'); return; }
 
     drawNav(key);
+    requestPersist();
     if (my !== token) return;
     await mod.render(view, args);
   } catch (err) {
@@ -78,6 +105,6 @@ window.addEventListener('hashchange', route);
 window.addEventListener('auth-lost', () => { location.hash = '#/login'; route(); });
 route().catch((e) => { view.textContent = e.message; toast(e.message, 'err'); });
 
-if ('serviceWorker' in navigator && location.protocol === 'https:') {
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }

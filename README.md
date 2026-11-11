@@ -8,7 +8,7 @@ Berjalan di **GitHub Pages** (tanpa server), database di **Supabase**, mengikuti
 - Pengaturan: kop surat (nama, logo, alamat, telepon), rekening bank, syarat & ketentuan standar, penomoran
 - Cetak A4 siap kirim: kop, klien, nomor, tabel item, terbilang, rekening, S&K, area tanda tangan
 - Login (Supabase Auth) + Row Level Security: data hanya bisa diakses user yang login
-- Bisa dipasang di layar utama HP/komputer
+- Bisa dipasang sebagai aplikasi di Android, komputer, dan iPhone; koneksi & login tersimpan; tautan setup untuk perangkat lain
 
 **Panduan lengkap: [PANDUAN-SETUP.md](PANDUAN-SETUP.md)**
 

@@ -41,9 +41,19 @@ Settings → Secrets and variables → Actions → tambah `SUPABASE_URL` dan `SU
 4. **+ Penawaran** / **+ Invoice** → isi → **Simpan** atau **Simpan & Cetak**.
 5. Di halaman cetak klik **Cetak / Simpan PDF**, pilih **A4** dan matikan *Headers and footers*.
 
-## 7. Pasang di HP (opsional)
-Chrome Android: menu ⋮ → **Instal aplikasi** / **Tambahkan ke layar utama**. Di komputer: ikon Instal di address bar.
-Aplikasi butuh internet untuk membaca/menyimpan data (data ada di Supabase).
+## 7. Pasang sebagai aplikasi (Android, komputer, iPhone)
+Aplikasi ini PWA: bisa dipasang, punya ikon sendiri, dan terbuka tanpa address bar.
+- **Android (Chrome):** tombol **Pasang aplikasi** muncul di menu atas aplikasi (atau menu ⋮ → **Instal aplikasi**). Hasilnya ikon di layar utama.
+- **Komputer (Chrome/Edge):** klik tombol **Pasang aplikasi** atau ikon instal di kanan address bar. Muncul di menu Start/Launchpad dan bisa dipin ke taskbar.
+- **iPhone/iPad (Safari):** Bagikan → **Tambahkan ke Layar Utama**. Catatan: di iOS, aplikasi layar utama punya penyimpanan terpisah dari Safari, jadi koneksi perlu diisi sekali lagi (lihat tautan setup di bawah).
+- Tekan lama ikon aplikasi di Android untuk jalan pintas **Penawaran Baru** / **Invoice Baru**.
+
+## 8. Koneksi tersimpan, tidak perlu diisi ulang
+- URL & key Supabase diisi **sekali** per perangkat, lalu tersimpan. Login juga tersimpan sampai Anda menekan **Keluar**.
+- Aplikasi meminta browser menyimpan data secara **permanen** (status terlihat di Pengaturan → *Aplikasi & Koneksi*).
+- **Perangkat lain:** buka **Pengaturan → Aplikasi & Koneksi → Salin tautan setup perangkat lain**, kirim ke perangkat itu (WhatsApp ke diri sendiri, dll.), lalu buka. Koneksi otomatis tersimpan dan tinggal login. Tautan berisi kunci *publishable* (bukan rahasia), tetap bagikan hanya ke perangkat Anda.
+- **Ganti project Supabase:** Pengaturan → **Ubah koneksi...**
+- **Tanpa setup sama sekali di semua perangkat:** isi `SUPABASE_URL` dan `SUPABASE_ANON_KEY` di `assets/js/config.js` (edit langsung di GitHub), atau simpan sebagai *Actions secrets* dengan nama yang sama (lihat bagian atas `deploy.yml`). Setelah deploy, perangkat baru langsung ke layar login.
 
 ## Mengubah warna tema
 Di `assets/css/app.css`, ubah `--brand` (dan `--brand-soft`). Ikon aplikasi ada di `assets/img/`.
@@ -56,4 +66,6 @@ Di `assets/css/app.css`, ubah `--brand` (dan `--brand-soft`). Ikon aplikasi ada 
 | `permission denied` / `new row violates row-level security` | Bagian keamanan di `schema.sql` belum terjalankan; jalankan ulang file itu. |
 | "Tidak dapat terhubung ke Supabase" | URL salah (harus `https://…supabase.co`), project *paused* (buka dashboard), atau tidak ada internet. |
 | Perubahan kode belum terlihat | Tutup & buka ulang aplikasi; naikkan `VERSION` di `sw.js` setiap mengubah kode. |
+| Tombol Pasang tidak muncul | Harus lewat **https** (alamat github.io), belum terpasang, dan memakai Chrome/Edge. Di Safari/iOS pakai menu Bagikan. Bisa juga lewat menu ⋮ browser. |
+| Setelah dipasang, minta isi koneksi lagi | Normal di iOS (penyimpanan terpisah). Pakai tautan setup, atau isi `config.js`. |
 | "Nomor dokumen sudah dipakai" | Nomor harus unik; ubah nomornya. |
