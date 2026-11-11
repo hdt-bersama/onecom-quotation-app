@@ -21,6 +21,14 @@ function drawNav(route) {
   lastKey = route;
   if (!isLoggedIn()) { nav.hidden = true; return; }
   nav.hidden = false;
+  const ic = (d) => `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+  const ICONS = {
+    dashboard: ic('<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>'),
+    'new-quotation': ic('<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 11v6M9 14h6"/>'),
+    'new-invoice': ic('<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9.5 8h5M9.5 12h5"/><path d="M9.5 16h2"/>'),
+    settings: ic('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'),
+  };
+  const tab = (href, label, key) => `<a href="${href}" class="${route === key ? 'on' : ''}" aria-label="${label}" title="${label}">${ICONS[key]}</a>`;
   const link = (href, label, key) => `<a href="${href}" class="${route === key ? 'on' : ''}">${label}</a>`;
   nav.innerHTML = `
     <div class="nav-in">
@@ -34,7 +42,13 @@ function drawNav(route) {
       <div class="who"><span class="muted small">${esc(currentUser())}</span>
         ${canInstall() ? '<button class="btn sm ghost" id="install">Pasang aplikasi</button>' : ''}
         <button class="btn sm ghost" id="logout">Keluar</button></div>
-    </div>`;
+    </div>
+    <nav class="tabbar" aria-label="Menu utama">
+      ${tab('#/dashboard', 'Dashboard', 'dashboard')}
+      ${tab('#/new/quotation', 'Penawaran baru', 'new-quotation')}
+      ${tab('#/new/invoice', 'Invoice baru', 'new-invoice')}
+      ${tab('#/settings', 'Pengaturan', 'settings')}
+    </nav>`;
   nav.querySelector('#logout').addEventListener('click', async () => { await signOut(); });
   nav.querySelector('#install')?.addEventListener('click', () => promptInstall());
 }
