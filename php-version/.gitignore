@@ -1,0 +1,7 @@
+.env
+public/uploads/*
+!public/uploads/.gitkeep
+!public/uploads/.htaccess
+.DS_Store
+*.log
+vendor/

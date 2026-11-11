@@ -1,0 +1,62 @@
+name: Deploy ke GitHub Pages
+
+# Jalan otomatis setiap push ke branch main (atau manual lewat tab Actions).
+# Sebelum pertama kali: Settings -> Pages -> Build and deployment -> Source: "GitHub Actions".
+#
+# OPSIONAL: isi secret berikut supaya alamat Supabase langsung tertanam dan layar
+# "Hubungkan Supabase" tidak muncul di perangkat baru
+#   (Settings -> Secrets and variables -> Actions -> New repository secret):
+#   SUPABASE_URL        contoh: https://abcdefghijklmnop.supabase.co
+#   SUPABASE_ANON_KEY   kunci "anon public" / "publishable"  (BUKAN service_role!)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Siapkan folder publish
+        run: |
+          mkdir -p _site
+          cp -r index.html manifest.webmanifest sw.js assets _site/
+
+      - name: Tanam alamat Supabase (opsional)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -n "$SUPABASE_URL" ] && [ -n "$SUPABASE_ANON_KEY" ]; then
+            python3 - <<'PY'
+          import os, re
+          p = '_site/assets/js/config.js'
+          s = open(p).read()
+          s = re.sub(r"SUPABASE_URL: '[^']*'", "SUPABASE_URL: '" + os.environ['SUPABASE_URL'].strip() + "'", s)
+          s = re.sub(r"SUPABASE_ANON_KEY: '[^']*'", "SUPABASE_ANON_KEY: '" + os.environ['SUPABASE_ANON_KEY'].strip() + "'", s)
+          open(p, 'w').write(s)
+          PY
+          fi
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

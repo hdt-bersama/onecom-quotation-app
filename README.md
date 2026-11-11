@@ -1,28 +1,30 @@
-# Penawaran Harga & Invoice (PHP + Supabase)
+# Penawaran Harga & Invoice
 
-Aplikasi PHP native (PDO) untuk membuat, mengedit ulang, mencetak Penawaran & Invoice. Database: Supabase (PostgreSQL). UI: Bootstrap 5 + Alpine.js. Cetak: HTML + CSS `@media print` (A4) -> "Simpan sebagai PDF".
+Aplikasi web statis (PWA) untuk membuat, mengedit ulang, dan mencetak **Penawaran Harga** dan **Invoice**.
+Berjalan di **GitHub Pages** (tanpa server), database di **Supabase**, mengikuti pola HDT POS.
+
+- Dashboard riwayat dokumen: cari, filter, ubah status, Cetak/PDF, Edit ulang, Hapus, "Jadikan Invoice"
+- Form dinamis: tambah/hapus baris item (deskripsi + spesifikasi, qty, satuan, harga, diskon %), subtotal/PPN/total otomatis
+- Pengaturan: kop surat (nama, logo, alamat, telepon), rekening bank, syarat & ketentuan standar, penomoran
+- Cetak A4 siap kirim: kop, klien, nomor, tabel item, terbilang, rekening, S&K, area tanda tangan
+- Login (Supabase Auth) + Row Level Security: data hanya bisa diakses user yang login
+- Bisa dipasang di layar utama HP/komputer
+
+**Panduan lengkap: [PANDUAN-SETUP.md](PANDUAN-SETUP.md)**
 
 ## Struktur
 ```
-config/config.php      konfigurasi (dibaca dari .env)
-database/schema.sql    skrip tabel Supabase
-src/                   Database, Repositories (Settings/Customers/Documents), controllers, helpers
-views/                 layout, dashboard, form, settings, print, login
-public/                DOCROOT: index.php, assets/, uploads/
-tools/render_demo.php  render halaman dengan data contoh (tanpa DB)
+index.html, manifest.webmanifest, sw.js   PWA
+assets/css/app.css                        tampilan (warna tema: variabel --brand)
+assets/js/                                app.js (router), supabase.js (klien Auth+REST), api.js, util.js, views/
+database/schema.sql                       tabel, fungsi, dan keamanan (jalankan di Supabase SQL Editor)
+.github/workflows/deploy.yml              deploy otomatis ke GitHub Pages
+tools/mock-supabase.mjs                   server tiruan untuk uji lokal tanpa Supabase
+php-version/                              versi PHP lama (arsip, tidak dipakai)
 ```
 
-## Hubungkan ke Supabase
-1. Buat project di supabase.com.
-2. SQL Editor -> New query -> tempel isi `database/schema.sql` -> Run.
-3. Klik **Connect** di dashboard -> salin parameter **Session pooler** (host `...pooler.supabase.com`, port 5432, user `postgres.<ref>`). Gunakan pooler, bukan host `db.<ref>.supabase.co` (hanya IPv6).
-4. `cp .env.example .env`, isi `DB_*` dan `APP_PASSWORD`.
-5. Pastikan PHP >= 8.1 dengan ekstensi `pdo_pgsql`, `fileinfo`.
-6. Jalankan: `php -S localhost:8000 -t public` lalu buka http://localhost:8000
-7. Buka **Pengaturan**, isi identitas perusahaan, logo, rekening, S&K.
-
-## Hosting
-GitHub hanya menyimpan kode. Untuk menjalankan PHP, deploy ke hosting PHP / VPS / Render / Railway (docroot = `public/`). Isi variabel `DB_*` dan `APP_*` sebagai environment variable di hosting. Logo disimpan di `public/uploads/`; di hosting dengan disk sementara, upload ulang logo setelah deploy atau gunakan volume persisten.
-
-## Keamanan
-CSRF token, prepared statements, login sesi (`APP_PASSWORD`), RLS aktif di semua tabel, upload dibatasi PNG/JPG/WebP. Jangan commit `.env`.
+## Uji lokal tanpa Supabase
+```
+node tools/mock-supabase.mjs        # buka http://localhost:8099 , login admin@test.com / secret
+```
+Hanya alat uji; data hilang saat server dimatikan.
