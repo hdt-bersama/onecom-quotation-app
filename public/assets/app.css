@@ -1,0 +1,21 @@
+:root { --accent: #0f766e; }
+body { background: #f4f6f8; }
+.app-nav { background: #111827; }
+.app-nav .navbar-brand, .app-nav .nav-link { color: #e5e7eb; }
+.app-nav .nav-link:hover { color: #fff; }
+.navbar-toggler { border-color: #4b5563; filter: invert(1); }
+.btn-primary { --bs-btn-bg: var(--accent); --bs-btn-border-color: var(--accent); --bs-btn-hover-bg: #0b5f58; --bs-btn-hover-border-color: #0b5f58; --bs-btn-active-bg: #0b5f58; }
+.btn-outline-primary { --bs-btn-color: var(--accent); --bs-btn-border-color: var(--accent); --bs-btn-hover-bg: var(--accent); --bs-btn-hover-border-color: var(--accent); --bs-btn-active-bg: var(--accent); }
+.text-bg-primary { background-color: var(--accent) !important; }
+.card { border: 1px solid #e5e7eb; border-radius: 10px; }
+.stat { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px 16px; height: 100%; }
+.stat-label { font-size: .78rem; color: #6b7280; text-transform: uppercase; letter-spacing: .04em; }
+.stat-value { font-size: 1.3rem; font-weight: 700; margin-top: 2px; }
+.stat-sub { font-size: .8rem; color: #6b7280; }
+.table > :not(caption) > * > * { padding: .7rem .75rem; }
+.table thead th { font-size: .75rem; text-transform: uppercase; letter-spacing: .04em; color: #6b7280; background: #f9fafb; }
+.status-select { width: 110px; font-weight: 600; border: 0; }
+.items-table td { vertical-align: top; }
+.totals-card { position: sticky; top: 12px; }
+.login-body { min-height: 100vh; display: grid; place-items: center; background: #111827; }
+.login-card { width: min(380px, 92vw); }
