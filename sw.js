@@ -1,6 +1,6 @@
 // Service worker sederhana: menyimpan file aplikasi (shell) agar terbuka cepat.
 // Data (Supabase) TIDAK pernah di-cache. Naikkan VERSION setiap kali ada perubahan kode.
-const VERSION = 'v4';
+const VERSION = 'v5';
 const SHELL = [
   './', 'index.html', 'manifest.webmanifest', 'assets/css/app.css', 'assets/img/icon.svg',
   'assets/img/icon-192.png', 'assets/img/icon-512.png', 'assets/img/icon-maskable-512.png',

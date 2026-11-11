@@ -28,7 +28,7 @@ export async function render(root, { type, id }) {
     <span class="hint">Di dialog cetak pilih A4 dan matikan "Headers and footers".</span>
   </div>
 
-  <div class="sheet">
+  <div class="sheet-scroll"><div class="sheet">
     <header class="kop">
       ${s.logo_data ? `<img class="logo" src="${s.logo_data}" alt="">` : ''}
       <div class="kop-text">
@@ -101,7 +101,7 @@ export async function render(root, { type, id }) {
           <div class="sign-name">( ${esc(signer)} )</div></div>
       </div>
     </div>
-  </div>`;
+  </div></div>`;
 
   root.querySelector('#prn').addEventListener('click', () => window.print());
 }
