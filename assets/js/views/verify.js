@@ -63,9 +63,12 @@ export async function render(root, { type, token, qs }) {
       ${host ? `<small class="muted">Server: ${esc(host)}</small>` : ''}
     </div>
     <div class="card pad vcard">
+      <div class="vbrand">
+        ${settings.logo_data ? `<img src="${settings.logo_data}" alt="">` : ''}
+        <div><b>${esc(settings.company_name)}</b>${settings.city ? `<small>${esc(settings.city)}</small>` : ''}</div>
+      </div>
       <div class="vhead"><span class="vtype">${esc(c.label)}</span><span class="badge accent">${esc(status)}</span></div>
       <div class="vnum">${esc(doc.number)}</div>
-      ${row('Diterbitkan oleh', esc(settings.company_name))}
       ${row('Kepada', esc(doc.customer_name))}
       ${row('Perihal', doc.subject ? esc(doc.subject) : '')}
       ${row('Tanggal', tglIndo(doc.issue_date))}
