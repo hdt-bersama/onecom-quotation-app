@@ -170,10 +170,10 @@ select.status.info { background: var(--info-bg); color: var(--info); }
 .sheet .rek { font-weight: 700; font-size: 11pt; letter-spacing: .5px; }
 .sheet ol.terms { margin: 2px 0 0; padding-left: 16px; font-size: 8.8pt; color: #222; }
 .sheet .thanks { margin: 10px 0 6px; font-size: 9.5pt; break-inside: avoid; }
-.sheet .qr { width: 28mm; height: 28mm; align-self: flex-end; } .sheet .qr-svg { width: 100%; height: 100%; display: block; }
+.sheet .qr { width: 26mm; height: 26mm; margin: 0 auto; } .sheet .qr-svg { width: 100%; height: 100%; display: block; }
 .sheet .sign { display: flex; justify-content: space-between; margin-top: 8px; break-inside: avoid; }
-.sheet .sign-box { width: 62mm; text-align: center; font-size: 9.5pt; }
-.sheet .sign-space { height: 22mm; }
+.sheet .sign-box { width: 62mm; text-align: center; font-size: 9.5pt; display: flex; flex-direction: column; }
+.sheet .sign-space { flex: 1; min-height: 28mm; display: flex; align-items: flex-end; justify-content: center; }
 .sheet .sign-name { font-weight: 700; border-top: 1px solid #111; padding-top: 3px; }
 
 /* ---------- Responsif (HP) ---------- */

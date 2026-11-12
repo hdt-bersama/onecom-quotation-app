@@ -98,8 +98,7 @@ export async function render(root, { type, id }) {
       <div class="sign">
         <div class="sign-box"><div>${isInv ? 'Diterima oleh,' : 'Disetujui oleh,'}</div><div class="sign-space"></div>
           <div class="sign-name">( ${esc(doc.customer_name)} )</div></div>
-        <div class="qr">${qrSvg(location.origin + location.pathname + '#/v/' + type + '/' + (doc.verify_token || 'contoh-token-verifikasi'))}</div>
-        <div class="sign-box"><div>${esc(s.city)}, ${tglIndo(doc.issue_date)}<br>Hormat kami,</div><div class="sign-space"></div>
+        <div class="sign-box"><div>${esc(s.city)}, ${tglIndo(doc.issue_date)}<br>Hormat kami,</div><div class="sign-space"><div class="qr">${qrSvg(location.origin + location.pathname + '#/v/' + type + '/' + (doc.verify_token || 'contoh-token-verifikasi'))}</div></div>
           <div class="sign-name">( ${esc(signer)} )</div></div>
       </div>
     </div>
