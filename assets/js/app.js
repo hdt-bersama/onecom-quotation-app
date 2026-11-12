@@ -14,6 +14,7 @@ const loaders = {
   form: () => import('./views/form.js'),
   settings: () => import('./views/settings.js'),
   print: () => import('./views/print.js'),
+  verify: () => import('./views/verify.js'),
 };
 
 let lastKey = 'dashboard';
@@ -78,6 +79,15 @@ async function route() {
     const m = await loaders.login();
     if (my !== token) return;
     m.render(view, { forceCfg: true, onDone: () => { location.hash = '#/dashboard'; route(); } });
+    return;
+  }
+
+  // Halaman verifikasi QR: publik, tanpa login
+  if (name === 'v' && a && b) {
+    nav.hidden = true;
+    const m = await loaders.verify();
+    if (my !== token) return;
+    await m.render(view, { type: a, token: b, qs });
     return;
   }
 

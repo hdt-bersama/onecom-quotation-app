@@ -55,6 +55,46 @@ Aplikasi ini PWA: bisa dipasang, punya ikon sendiri, dan terbuka tanpa address b
 - **Ganti project Supabase:** Pengaturan → **Ubah koneksi...**
 - **Tanpa setup sama sekali di semua perangkat:** isi `SUPABASE_URL` dan `SUPABASE_ANON_KEY` di `assets/js/config.js` (edit langsung di GitHub), atau simpan sebagai *Actions secrets* dengan nama yang sama (lihat bagian atas `deploy.yml`). Setelah deploy, perangkat baru langsung ke layar login.
 
+## 9. QR verifikasi pada penawaran & invoice
+
+Setiap penawaran/invoice yang dicetak memuat QR di atas nama penandatangan. Siapa pun yang memindainya
+(tanpa login) melihat halaman hanya-baca berisi dokumen aslinya dan keterangan bahwa dokumen itu terdaftar
+di sistem. Dokumen yang dihapus atau QR palsu menampilkan "Dokumen tidak ditemukan".
+
+**Yang perlu dilakukan sekali:** jalankan ulang `database/schema.sql` di Supabase (SQL Editor -> New query ->
+tempel -> Run). Aman diulang; dokumen lama otomatis mendapat kode QR.
+
+Supaya QR bisa dibuka di HP siapa pun, alamat server harus ikut diketahui halaman verifikasi:
+
+- **Disarankan:** tanamkan alamat Supabase lewat GitHub Secrets (Settings -> Secrets and variables -> Actions):
+  `SUPABASE_URL` dan `SUPABASE_ANON_KEY`, lalu di tab Actions jalankan ulang "Deploy ke GitHub Pages". Dengan cara ini
+  halaman verifikasi hanya pernah bicara ke Supabase Anda sendiri.
+- Tanpa itu, QR membawa alamat project + kunci publik di dalam tautannya (hanya muat jika memakai kunci
+  **publishable** yang pendek, bukan kunci anon lama yang panjang). Halaman verifikasi lalu menampilkan baris
+  "Server: ..." agar terlihat ke mana ia terhubung.
+
+Catatan: QR memuat alamat situs saat dicetak. Jika alamat GitHub Pages berubah (mis. repo dipindah ke akun lain),
+QR pada dokumen yang sudah tercetak ikut mengarah ke alamat lama. Pindahkan dulu sebelum mencetak dokumen sungguhan.
+
+## 10. Memindahkan repo ke akun GitHub lain
+
+Pilih salah satu. Untuk akun baru, perlu **nama pengguna** GitHub-nya (email tidak cukup).
+
+**A. Import (paling mudah, repo lama tetap ada)** — login ke akun tujuan, buka https://github.com/new/import ,
+isi URL repo lama (`https://github.com/<akun-lama>/quotation-app`), pilih nama dan **Public**, klik *Begin import*.
+
+**B. Transfer (repo pindah, riwayat & pengaturan ikut)** — di repo lama: Settings -> General -> paling bawah *Danger Zone*
+-> *Transfer ownership* -> isi nama pengguna akun tujuan. Akun tujuan menerima email dan harus menerimanya.
+
+Setelah repo ada di akun baru (berlaku untuk A maupun B):
+
+1. Settings -> Pages -> Source: **GitHub Actions**. (Akun gratis: repo harus **Public**.)
+2. Jika memakai Secrets (langkah 9), buat ulang `SUPABASE_URL` dan `SUPABASE_ANON_KEY` — secrets tidak ikut terbawa.
+3. Tab Actions -> *Deploy ke GitHub Pages* -> *Run workflow*.
+4. Alamat baru: `https://<akun-baru>.github.io/quotation-app/`. Buka sekali, lalu isi koneksi Supabase (atau pakai tautan
+   setup di langkah 8). Data tetap di Supabase, tidak ikut pindah dan tidak hilang.
+5. Pasang ulang aplikasi di HP/komputer dari alamat baru (aplikasi lama terikat ke alamat lama).
+
 ## Mengubah warna tema
 Di `assets/css/app.css`, ubah `--brand` (dan `--brand-soft`). Ikon aplikasi ada di `assets/img/`.
 

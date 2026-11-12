@@ -1,12 +1,12 @@
 // Service worker sederhana: menyimpan file aplikasi (shell) agar terbuka cepat.
 // Data (Supabase) TIDAK pernah di-cache. Naikkan VERSION setiap kali ada perubahan kode.
-const VERSION = 'v6';
+const VERSION = 'v7';
 const SHELL = [
   './', 'index.html', 'manifest.webmanifest', 'assets/css/app.css', 'assets/img/icon.svg',
   'assets/img/icon-192.png', 'assets/img/icon-512.png', 'assets/img/icon-maskable-512.png',
   'assets/js/app.js', 'assets/js/pwa.js', 'assets/js/config.js', 'assets/js/util.js', 'assets/js/supabase.js', 'assets/js/api.js',
   'assets/js/views/login.js', 'assets/js/views/dashboard.js', 'assets/js/views/form.js',
-  'assets/js/views/settings.js', 'assets/js/views/print.js',
+  'assets/js/views/settings.js', 'assets/js/views/print.js', 'assets/js/views/verify.js', 'assets/js/sheet.js', 'assets/js/qr.js',
 ];
 
 self.addEventListener('install', (e) => {

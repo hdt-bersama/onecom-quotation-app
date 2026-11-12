@@ -340,3 +340,58 @@ revoke execute on function public.next_doc_number(text, date) from public, anon;
 revoke execute on function public.save_document(text, bigint, jsonb, jsonb) from public, anon;
 grant  execute on function public.next_doc_number(text, date) to authenticated;
 grant  execute on function public.save_document(text, bigint, jsonb, jsonb) to authenticated;
+
+-- =====================================================================
+-- VERIFIKASI QR (halaman publik tanpa login)
+-- Setiap dokumen punya kode acak (verify_token) yang dimuat di QR. Orang yang memindai
+-- QR memanggil get_public_document() dengan kode itu dan hanya mendapat SATU dokumen.
+-- Tabel tetap tertutup untuk anon; kode tidak bisa ditebak (UUID acak).
+-- Aman dijalankan ulang; dokumen lama otomatis mendapat kode.
+-- =====================================================================
+alter table public.quotations add column if not exists verify_token uuid not null default gen_random_uuid();
+alter table public.invoices   add column if not exists verify_token uuid not null default gen_random_uuid();
+create unique index if not exists quotations_verify_token_key on public.quotations (verify_token);
+create unique index if not exists invoices_verify_token_key   on public.invoices   (verify_token);
+
+create or replace function public.get_public_document(p_type text, p_token uuid)
+returns jsonb
+language plpgsql
+stable
+security definer
+set search_path = public
+as $$
+declare
+    v_doc   jsonb;
+    v_items jsonb;
+    v_set   jsonb;
+begin
+    if p_type = 'quotation' then
+        select to_jsonb(q) || jsonb_build_object('date2', q.valid_until) into v_doc
+          from public.quotations q where q.verify_token = p_token;
+        if v_doc is null then return null; end if;
+        select coalesce(jsonb_agg(to_jsonb(i) order by i.position, i.id), '[]'::jsonb) into v_items
+          from public.quotation_items i where i.quotation_id = (v_doc->>'id')::bigint;
+    elsif p_type = 'invoice' then
+        select to_jsonb(v) || jsonb_build_object('date2', v.due_date) into v_doc
+          from public.invoices v where v.verify_token = p_token;
+        if v_doc is null then return null; end if;
+        select coalesce(jsonb_agg(to_jsonb(i) order by i.position, i.id), '[]'::jsonb) into v_items
+          from public.invoice_items i where i.invoice_id = (v_doc->>'id')::bigint;
+    else
+        return null;
+    end if;
+
+    select jsonb_build_object(
+               'company_name', company_name, 'address', address, 'phone', phone, 'email', email,
+               'city', city, 'logo_data', logo_data, 'bank_name', bank_name,
+               'bank_account_no', bank_account_no, 'bank_account_holder', bank_account_holder,
+               'signer_name', signer_name)
+      into v_set from public.settings where id = 1;
+
+    return jsonb_build_object('doc', v_doc - 'verify_token', 'items', v_items, 'settings', coalesce(v_set, '{}'::jsonb));
+end;
+$$;
+
+revoke execute on function public.get_public_document(text, uuid) from public;
+grant  execute on function public.get_public_document(text, uuid) to anon, authenticated;
+

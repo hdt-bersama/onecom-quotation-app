@@ -12,6 +12,10 @@ Berjalan di **GitHub Pages** (tanpa server), database di **Supabase**, mengikuti
 
 **Panduan lengkap: [PANDUAN-SETUP.md](PANDUAN-SETUP.md)**
 
+## QR verifikasi
+Setiap dokumen cetak memuat QR yang membuka halaman hanya-baca (tanpa login) untuk memastikan dokumen itu asli.
+Lihat langkah 9 di [PANDUAN-SETUP.md](PANDUAN-SETUP.md). Pembuat QR ada di `assets/js/qr.js` (tanpa library).
+
 ## Struktur
 ```
 index.html, manifest.webmanifest, sw.js   PWA

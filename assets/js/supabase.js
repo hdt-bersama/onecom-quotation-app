@@ -131,3 +131,23 @@ export async function rest(method, path, { body, prefer, retry = true } = {}) {
 }
 
 export const rpc = (fn, args) => rest('POST', `rpc/${fn}`, { body: args });
+
+/** Panggil fungsi RPC tanpa login (hanya kunci publik). `override` = {url,key} bila perangkat belum punya koneksi. */
+export async function publicRpc(fn, args, override) {
+  let { url, key } = getCfg();
+  if (!(url && key) && override) ({ url, key } = override);
+  if (!url || !key) throw new ApiError('Alamat server belum diketahui. Minta tautan/QR yang baru.');
+  let res;
+  try {
+    res = await fetch(`${url}/rest/v1/rpc/${fn}`, {
+      method: 'POST', headers: { apikey: key, 'Content-Type': 'application/json' }, body: JSON.stringify(args),
+    });
+  } catch {
+    throw new ApiError('Tidak dapat terhubung ke server. Periksa koneksi internet.');
+  }
+  const text = await res.text();
+  let data = null;
+  if (text) { try { data = JSON.parse(text); } catch { data = text; } }
+  if (!res.ok) throw new ApiError((data && (data.message || data.error)) || `Permintaan gagal (${res.status})`, res.status);
+  return data;
+}

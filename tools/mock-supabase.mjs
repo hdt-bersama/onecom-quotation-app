@@ -6,6 +6,7 @@ import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { randomUUID } from 'node:crypto';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PORT = Number(process.argv[2] || process.env.PORT || 8099);
@@ -64,6 +65,22 @@ function nextNumber(type, date) {
   return stem + String(max + 1).padStart(4, '0');
 }
 
+// Meniru public.get_public_document(): satu dokumen berdasarkan kode, tanpa login.
+function publicDocument({ p_type, p_token }) {
+  const t = T[p_type];
+  if (!t) return null;
+  const rec = db[t.table].find((r) => r.verify_token === p_token);
+  if (!rec) return null;
+  const { verify_token, ...doc } = rec;
+  const st = db.settings[0];
+  const pick = ['company_name', 'address', 'phone', 'email', 'city', 'logo_data', 'bank_name', 'bank_account_no', 'bank_account_holder', 'signer_name'];
+  return {
+    doc: { ...doc, date2: rec[t.d2] ?? null },
+    items: db[t.items].filter((i) => i[t.fk] === rec.id).sort((a, b) => a.position - b.position),
+    settings: Object.fromEntries(pick.map((k) => [k, st[k] ?? null])),
+  };
+}
+
 function saveDocument({ p_type, p_id, p_doc: d, p_items }) {
   const t = T[p_type];
   if (!t) throw new PgErr(`Tipe dokumen tidak valid: ${p_type}`, 'P0001');
@@ -89,7 +106,7 @@ function saveDocument({ p_type, p_id, p_doc: d, p_items }) {
   let id = p_id;
   if (id == null) {
     id = ++seq;
-    const rec = { id, ...row, created_at: new Date().toISOString() };
+    const rec = { id, ...row, verify_token: randomUUID(), created_at: new Date().toISOString() };
     if (p_type === 'invoice') { rec.quotation_id = d.quotation_id || null; rec.paid_at = d.status === 'paid' ? new Date().toISOString() : null; }
     db[t.table].push(rec);
   } else {
@@ -126,6 +143,10 @@ http.createServer(async (req, res) => {
       return send(res, 200, mint());
     }
     if (u.pathname.startsWith('/rest/v1/')) {
+      if (u.pathname === '/rest/v1/rpc/get_public_document') {   // publik: cukup apikey, tanpa login
+        if (!req.headers.apikey) return send(res, 401, { message: 'No API key', code: 'PGRST301' });
+        return send(res, 200, publicDocument(await body(req)));
+      }
       const tok = (req.headers.authorization || '').replace('Bearer ', '');
       if (!req.headers.apikey || !tokens.has(tok)) return send(res, 401, { message: 'JWT invalid', code: 'PGRST301' });
       const target = u.pathname.slice(9);

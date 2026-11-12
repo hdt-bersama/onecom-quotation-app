@@ -272,11 +272,19 @@ select.status.info { background: var(--info-bg); color: var(--info); }
   .stat .val { font-size: 1.1rem; overflow-wrap: anywhere; }
 }
 
+/* ---------- Halaman verifikasi QR ---------- */
+.verify { max-width: 230mm; margin: 0 auto; padding: 12px 0 28px; }
+.verify-banner { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; border-radius: 12px; margin-bottom: 12px; font-size: .95rem; }
+.verify-banner b:first-child { font-size: 1.05rem; }
+.verify-banner.ok { background: #e7f6ec; color: #14532d; border: 1px solid #b7e4c7; }
+.verify-banner.bad { background: #fdeaea; color: #7f1d1d; border: 1px solid #f5c2c2; }
+.verify-banner small { opacity: .8; }
+
 /* ---------- Cetak ---------- */
 @page { size: A4; margin: 14mm 15mm 16mm; }
 @media print {
   html, body { background: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .no-print, .appnav, #toasts { display: none !important; }
+  .no-print, .appnav, #toasts, .verify-banner { display: none !important; }
   .container { max-width: none; padding: 0; }
   .sheet { width: auto; min-height: 0; margin: 0; padding: 0; box-shadow: none; }
   .sheet .info, .sheet .summary, .sheet .two { flex-direction: row; }

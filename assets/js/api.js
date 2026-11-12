@@ -1,5 +1,5 @@
 // Lapisan data: semua akses ke tabel Supabase lewat sini.
-import { rest, rpc } from './supabase.js';
+import { rest, rpc, publicRpc } from './supabase.js';
 import { addDays, today } from './util.js';
 
 export const TYPES = {
@@ -93,4 +93,14 @@ export async function quotationToInvoice(qid, settings) {
     issue_date: date, date2: addDays(date, Number(settings.default_valid_days) || 14), status: 'draft',
     tax_percent: q.tax_percent, notes: q.notes, terms: q.terms,
   }, q.items);
+}
+
+/** Ambil satu dokumen untuk halaman verifikasi QR (tanpa login). null bila kode tidak dikenal. */
+export async function getPublicDoc(type, token, override) {
+  const r = await publicRpc('get_public_document', { p_type: type, p_token: token }, override);
+  if (!r) return null;
+  return {
+    doc: { ...r.doc, type, items: r.items || [] },
+    settings: { ...DEFAULT_SETTINGS, ...(r.settings || {}) },
+  };
 }
