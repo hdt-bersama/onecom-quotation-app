@@ -1,8 +1,7 @@
 // Halaman verifikasi QR: bisa dibuka siapa saja tanpa login, hanya-baca.
 import * as api from '../api.js';
-import { sheetHtml } from '../sheet.js';
 import { getCfg } from '../supabase.js';
-import { esc } from '../util.js';
+import { esc, rupiah, qtyFmt, tglIndo, num } from '../util.js';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -50,12 +49,36 @@ export async function render(root, { type, token, qs }) {
   let host = '';
   if (fromQr) { try { host = new URL(cfgFromQuery(qs)?.url || '').host; } catch { /* abaikan */ } }
 
+  const row = (k, v) => (v ? `<div class="vrow"><span>${esc(k)}</span><b>${v}</b></div>` : '');
+  const lines = doc.items.map((i) => `
+    <div class="vitem">
+      <div class="vname">${esc(i.description)}</div>
+      <div class="vsub">${qtyFmt(i.qty)}${i.unit ? ' ' + esc(i.unit) : ''} &times; ${rupiah(i.unit_price)}${num(i.discount_percent) > 0 ? ` &minus; ${qtyFmt(i.discount_percent)}%` : ''}</div>
+      <div class="vamt">${rupiah(i.line_total)}</div>
+    </div>`).join('');
+
   root.innerHTML = shell(`
     <div class="verify-banner ok">
       <b>&#10003; Dokumen asli &middot; terdaftar di sistem</b>
-      <span>${esc(c.label)} <b>${esc(doc.number)}</b> diterbitkan oleh ${esc(settings.company_name)}.
-        Status: <span class="badge accent">${esc(status)}</span></span>
       ${host ? `<small class="muted">Server: ${esc(host)}</small>` : ''}
     </div>
-    ${sheetHtml({ doc, s: settings, type, qrUrl: '' })}`);
+    <div class="card pad vcard">
+      <div class="vhead"><span class="vtype">${esc(c.label)}</span><span class="badge accent">${esc(status)}</span></div>
+      <div class="vnum">${esc(doc.number)}</div>
+      ${row('Diterbitkan oleh', esc(settings.company_name))}
+      ${row('Kepada', esc(doc.customer_name))}
+      ${row('Perihal', doc.subject ? esc(doc.subject) : '')}
+      ${row('Tanggal', tglIndo(doc.issue_date))}
+      ${row(c.date2Label, doc.date2 ? tglIndo(doc.date2) : '')}
+    </div>
+    <div class="card pad vcard">
+      <h2 class="sec">Rincian</h2>
+      ${lines}
+      <div class="vtot">
+        ${row('Subtotal', rupiah(doc.subtotal))}
+        ${num(doc.discount_total) > 0 ? row('Diskon', '- ' + rupiah(doc.discount_total)) : ''}
+        ${num(doc.tax_amount) > 0 ? row(`PPN ${qtyFmt(doc.tax_percent)}%`, rupiah(doc.tax_amount)) : ''}
+        <div class="vrow grand"><span>Total</span><b>Rp ${rupiah(doc.total)}</b></div>
+      </div>
+    </div>`);
 }

@@ -279,6 +279,17 @@ select.status.info { background: var(--info-bg); color: var(--info); }
 .verify-banner.ok { background: #e7f6ec; color: #14532d; border: 1px solid #b7e4c7; }
 .verify-banner.bad { background: #fdeaea; color: #7f1d1d; border: 1px solid #f5c2c2; }
 .verify-banner small { opacity: .8; }
+.verify { max-width: 560px; }
+.vcard { margin-bottom: 12px; }
+.vhead { display: flex; justify-content: space-between; align-items: center; }
+.vtype { font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 700; }
+.vnum { font-size: 1.35rem; font-weight: 800; margin: 2px 0 10px; overflow-wrap: anywhere; }
+.vrow { display: flex; justify-content: space-between; gap: 16px; padding: 7px 0; border-top: 1px solid var(--line); }
+.vrow span { color: var(--muted); flex: none; } .vrow b { text-align: right; font-weight: 600; overflow-wrap: anywhere; }
+.vitem { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding: 9px 0; border-top: 1px solid var(--line); }
+.vitem:first-of-type { border-top: 0; } .vname { font-weight: 700; overflow-wrap: anywhere; } .vsub { color: var(--muted); font-size: .85rem; }
+.vamt { grid-row: 1 / span 2; grid-column: 2; align-self: center; font-weight: 700; white-space: nowrap; }
+.vtot { margin-top: 6px; } .vrow.grand { border-top: 2px solid var(--ink, #111); font-size: 1.1rem; } .vrow.grand span { color: inherit; font-weight: 700; }
 
 /* ---------- Cetak ---------- */
 @page { size: A4; margin: 14mm 15mm 16mm; }
