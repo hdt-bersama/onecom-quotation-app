@@ -58,7 +58,7 @@ Aplikasi ini PWA: bisa dipasang, punya ikon sendiri, dan terbuka tanpa address b
 ## 9. QR verifikasi pada penawaran & invoice
 
 Setiap penawaran/invoice yang dicetak memuat QR di atas nama penandatangan. Siapa pun yang memindainya
-(tanpa login) melihat halaman hanya-baca berisi dokumen aslinya dan keterangan bahwa dokumen itu terdaftar
+(tanpa login) melihat halaman detail hanya-baca (logo, nomor, status, pelanggan, rincian item, total) dan keterangan bahwa dokumen itu terdaftar
 di sistem. Dokumen yang dihapus atau QR palsu menampilkan "Dokumen tidak ditemukan".
 
 **Yang perlu dilakukan sekali:** jalankan ulang `database/schema.sql` di Supabase (SQL Editor -> New query ->
