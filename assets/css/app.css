@@ -170,6 +170,7 @@ select.status.info { background: var(--info-bg); color: var(--info); }
 .sheet .rek { font-weight: 700; font-size: 11pt; letter-spacing: .5px; }
 .sheet ol.terms { margin: 2px 0 0; padding-left: 16px; font-size: 8.8pt; color: #222; }
 .sheet .thanks { margin: 10px 0 6px; font-size: 9.5pt; break-inside: avoid; }
+.sheet .qr { width: 28mm; height: 28mm; align-self: flex-end; } .sheet .qr-svg { width: 100%; height: 100%; display: block; }
 .sheet .sign { display: flex; justify-content: space-between; margin-top: 8px; break-inside: avoid; }
 .sheet .sign-box { width: 62mm; text-align: center; font-size: 9.5pt; }
 .sheet .sign-space { height: 22mm; }
